@@ -19,7 +19,7 @@ Physics Set-up:
   This is our analytic closed form.
 
 
-Usage (short version):
+Features (short version):
   1) Riemann Midpoint
   2) Trapezoid
   3) Simpson
