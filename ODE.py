@@ -91,6 +91,28 @@ def sho_rhs(t: float, y: np.ndarray, p: SHOParams) -> np.ndarray:
     return np.array([v, a], dtype=float)
 
 # ------------------------------------ Euler & RK4 ------------------------------------
+def euler_step(f: Callable, t: float, y: np.ndarray, h: float, p: SHOParams) -> np.ndarray:
+    return y + h * f(t, y, p)
+
+def rk4_step(f: Callable, t: float, y: np.ndarray, h: float, p: SHOParams) -> np.ndarray:
+    k1 = f(t,           y,            p)
+    k2 = f(t + 0.5*h,   y + 0.5*h*k1, p)
+    k3 = f(t + 0.5*h,   y + 0.5*h*k2, p)
+    k4 = f(t + h,       y + h*k3,     p)
+    return y + (h/6.0)*(k1 + 2*k2 + 2*k3 + k4)
+
+# ------------------------------------- Integrator loop ------------------------------------
+def integrate(f: Callable, stepper: Callable, t0: float, y0, h: float, nsteps: int, p: SHOParams):
+    y0 = np.array(y0, dtype=float)
+    t = np.empty(nsteps + 1)
+    Y = np.empty((nsteps + 1, 2))
+    t[0], Y[0] = t0, y0
+    ti, yi = t0, y0
+    for i in range(1, nsteps + 1):
+        yi = stepper(f, ti, yi, h, p)
+        ti = t0 + i*h
+        t[i], Y[i] = ti, yi
+    return t, Y
 
 
 
