@@ -114,6 +114,50 @@ def integrate(f: Callable, stepper: Callable, t0: float, y0, h: float, nsteps: i
         t[i], Y[i] = ti, yi
     return t, Y
 
+# ---------------------------- Analytics & Helper Functions ----------------------------
+
+def omega0(p: SHOParams) -> float:
+    return math.sqrt(p.k / p.m)
+
+def gamma(p: SHOParams) -> float:
+    return p.c / p.m
+
+def energy(x: np.ndarray, v: np.ndarray, p: SHOParams) -> np.ndarray:
+    return 0.5 * p.m * v*v + 0.5 * p.k * x*x
+
+def exact_free_solution(t: np.ndarray, x0: float, v0: float, p: SHOParams) -> np.ndarray:
+    om0 = omega0(p)
+    return x0 * np.cos(om0*t) + (v0/om0) * np.sin(om0*t)
+
+def steady_state_amp_phase_analytic(p: SHOParams) -> Tuple[float, float]:
+    """Amplitude X and phase phi for steady-state x = X cos(Omega t - phi)."""
+    om0 = omega0(p)
+    gam  = gamma(p)
+    X = (p.F0 / p.m) / math.sqrt((om0**2 - p.Omega**2)**2 + (gam*p.Omega)**2)
+    phi = math.atan2(gam*p.Omega, om0**2 - p.Omega**2)
+    return X, phi
+
+def fit_amp_phase_cos_sin(t: np.ndarray, x: np.ndarray, Omega: float) -> Tuple[float, float, float]:
+    """
+    Least-squares fit x(t) approx A cos(Omega t) + B sin(Omega t) + C
+    Returns (amplitude R, phase phi, offset C) with R cos(Omega t - phi) form.
+    """
+    C = np.column_stack([np.cos(Omega*t), np.sin(Omega*t), np.ones_like(t)])
+    coeff, *_ = np.linalg.lstsq(C, x, rcond=None)
+    A, B, C0 = coeff
+    R = float(np.hypot(A, B))
+    phi = float(np.arctan2(B, A))
+    return R, phi, float(C0)
+
+def resonance_peak_theory(p: SHOParams) -> float:
+    """For underdamped case, amplitude peak near sqrt(omega_{0}^2 - gamma^2/2)."""
+    om0 = omega0(p); gam = gamma(p)
+    if gam >= math.sqrt(2)*om0:
+        return float('nan')
+    return math.sqrt(max(om0**2 - 0.5*gam**2, 0.0))
+
+def pick_stepper(name: str) -> Callable:
+    return {"euler": euler_step, "rk4": rk4_step}[name]
 
 
 
