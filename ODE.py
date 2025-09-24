@@ -60,7 +60,24 @@ Usage examples:
   python ODE.py physical_checks --m 1 --k 1 --c 0.1 --F0 1 --h 0.01 --tmax 60
 """
 
-# --------------------------
+from __future__ import annotations
+# ----------------------------- Import ----------------------------- #
+import argparse
+import math
+import sys
+from dataclasses import dataclass
+from typing import Callable, List, Tuple
+import numpy as np
+
+try:
+    import matplotlib.pyplot as plt
+    PLOT_OK = True
+except Exception:
+    PLOT_OK = False
+# ----------------------------- Physics model ----------------------------- #
+
+
+
 
 
 
