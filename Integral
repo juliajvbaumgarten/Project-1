@@ -1,1 +1,37 @@
 # Author: Julia Baumgarten
+
+"""
+Problem Description:
+  Coulomb's law in 1D geometry: Electric field on the perpendicular bisector of a uniformly charged finite line. 
+  We integrate the smooth kernel and compare our numerical result against the analytic result and against SciPy.
+
+Physics Set-up:
+  Line of half-length L along x-axis with linear charge density λ.
+  We evaluate E at the point (0, a) by symmetry, only the y-component survives:
+
+    E_y(a) = (1 / (4π ε0)) * ∫_{-L}^{L} [ λ * a / (x^2 + a^2)^{3/2} ] dx
+
+  We let K = λ / (4π ε0), so
+
+    Ey(a, L) = K * ∫_{-L}^{L} a / (x^2 + a^2)^{3/2} dx
+             = K * ( 2 L / (a * sqrt(a^2 + L^2)) )   
+
+  This is our analytic closed form.
+
+
+Usage (short version):
+  1) Riemann Midpoint
+  2) Trapezoid
+  3) Simpson
+  4) E_{y} numeric and analytic
+  5) error_vs_N     -> loglog error study vs N for each rule
+     field_profile  -> E_{y} vs a curve, numeric vs analytic
+     compare_scipy  -> numeric value vs SciPy quad/trapezoid/simpson
+
+Usage examples:
+  python main_integral.py error_vs_N --L 1.0 --a 0.5 --N_list 20 40 80 160 --rules riemann trapezoid simpson --plot
+  python main_integral.py field_profile --L 1.0 --a_min 0.1 --a_max 4.0 --n_a 50 --rule simpson --N 400 --plot
+  python main_integral.py compare_scipy --L 1.0 --a 0.5 --rule simpson --N 400
+"""
+
+
