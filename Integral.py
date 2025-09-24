@@ -34,7 +34,7 @@ Usage examples:
   python main_integral.py field_profile --L 1.0 --a_min 0.1 --a_max 4.0 --n_a 50 --rule simpson --N 400 --plot
   python main_integral.py compare_scipy --L 1.0 --a 0.5 --rule simpson --N 400
 """
-
+from __future__ import annotations
 # ----------------------------- Import ----------------------------- #
 import argparse
 import math
