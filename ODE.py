@@ -54,7 +54,9 @@ Usage examples:
   python ODE.py convergence --m 1 --k 1 --x0 1 --v0 0 --tmax 10 --h_list 0.4 0.2 0.1 0.05 0.025
 
   # Frequency response (amplitude & phase vs Omega) with analytic
-  python ODE.py frequency_response --m 1 --k 1 --c 0.1 --F0 1 --h 0.01 \ --Omega_min 0.2 --Omega_max 2.0 --n_Omega 60 --method rk4
+  python ODE.py frequency_response \
+  --m 1 --k 1 --c 0.1 --F0 1 --h 0.01 \
+  --Omega_min 0.2 --Omega_max 2.0 --n_Omega 60 --method rk4
 
   # Physical checks (energy conservation, resonance, phase approx 90 degree)
   python ODE.py physical_checks --m 1 --k 1 --c 0.1 --F0 1 --h 0.01 --tmax 60
