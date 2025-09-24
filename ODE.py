@@ -9,7 +9,7 @@ Problem Description:
  
 Physics Set-up:
   - m : mass
-  - k : spring constant, ω0 = sqrt(k/m)  (natural frequency)
+  - k : spring constant, omega_{0} = sqrt(k/m)  (natural frequency)
   - c : damping coefficient, γ = c/m      (damping rate)
   - F_{0} cos(Omega t) : sinusoidal drive of amplitude F_{0} and angular frequency Omega
 
@@ -74,9 +74,23 @@ try:
     PLOT_OK = True
 except Exception:
     PLOT_OK = False
-# ----------------------------- Physics model ----------------------------- #
+# ----------------------------- Physics model & Parameters ----------------------------- 
+@dataclass
+class SHOParams:
+    m: float = 1.0      # mass
+    c: float = 0.0      # damping coefficient
+    k: float = 1.0      # spring constant
+    F0: float = 0.0     # driving amplitude
+    Omega: float = 1.0  # driving angular frequency
 
+def sho_rhs(t: float, y: np.ndarray, p: SHOParams) -> np.ndarray:
+    """y = [x, v]; returns [x', v'] for m x'' + c x' + k x = F_{0} cos(Omega t)"""
+    x, v = y
+    drive = p.F0 * math.cos(p.Omega * t)
+    a = (-p.c * v - p.k * x + drive) / p.m
+    return np.array([v, a], dtype=float)
 
+# ------------------------------------ Euler & RK4 ------------------------------------
 
 
 
