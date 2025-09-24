@@ -46,7 +46,7 @@ import numpy as np
 try:
     import scipy.integrate as spint  # quad, simpson, trapezoid
     SCIPY_OK = True
-except Exception:  # pragma: no cover
+except Exception:
     SCIPY_OK = False
 # ----------------------------- Physics model ----------------------------- #
 @dataclass
