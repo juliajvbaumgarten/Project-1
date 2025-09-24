@@ -111,6 +111,36 @@ def simpson(f: Callable[[np.ndarray], np.ndarray], a: float, b: float, N: int) -
     S = y[0] + y[-1] + 4.0 * np.sum(y[1:-1:2]) + 2.0 * np.sum(y[2:-2:2])
     return float(h * S / 3.0)
 
+# ----------------------------- Problem ---------------------------------- #
+
+def ey_numeric(p: CoulombLineParams, rule: str, N: int) -> float:
+    """
+    We wrap the quadrature rules to compute Ey(a, L) for the Coulomb line.
+    """
+    f = lambda x: ey_kernel(x, p.a)
+    a, b = -p.L, p.L
+    if rule == "riemann":
+        val = riemann_midpoint(f, a, b, N)
+    elif rule == "trapezoid":
+        val = trapezoid(f, a, b, N)
+    elif rule == "simpson":
+        val = simpson(f, a, b, N)
+    else:
+        raise ValueError(f"Unknown rule '{rule}'. Choose from: riemann, trapezoid, simpson.")
+    return p.K * val
+
+
+def rel_error(x: float, ref: float) -> float:
+    """Relative error with safe handling near zero."""
+    denom = max(1.0, abs(ref))
+    return abs(x - ref) / denom
+
+
+def print_note(msg: str) -> None:
+    print(f"[note] {msg}")
+
+
+# ----------------------------- Command Line Interface Modes ----------------------------- #
 
 
 
