@@ -159,6 +159,260 @@ def resonance_peak_theory(p: SHOParams) -> float:
 def pick_stepper(name: str) -> Callable:
     return {"euler": euler_step, "rk4": rk4_step}[name]
 
+# ---------------------------- Command Line Integration Modes ----------------------------
+
+def mode_phase_portrait(a: argparse.Namespace) -> None:
+    p = SHOParams(m=a.m, c=a.c, k=a.k, F0=a.F0, Omega=a.Omega)
+    stepper = pick_stepper(a.method)
+    N = int(a.tmax / a.h)
+    t, Y = integrate(sho_rhs, stepper, 0.0, [a.x0, a.v0], a.h, N, p)
+
+    if PLOT_OK:
+        plt.figure()
+        plt.plot(Y[:,0], Y[:,1])
+        plt.xlabel("x")
+        plt.ylabel("v")
+        plt.title(f"Phase portrait ({a.method}), m={p.m}, k={p.k}, c={p.c}, F0={p.F0}, Ω={p.Omega}")
+        plt.grid(True)
+        plt.tight_layout()
+        plt.show()
+    else:
+        print("[note] matplotlib not available; no plot produced.")
+    print(f"Final state: x={Y[-1,0]:.6f}, v={Y[-1,1]:.6f}")
+
+
+def mode_energy_drift(a: argparse.Namespace) -> None:
+    # Force the validation case c=0, F_{0}=0 unless user overrides
+    p = SHOParams(m=a.m, c=0.0 if a.force_validation else a.c, k=a.k,
+                  F0=0.0 if a.force_validation else a.F0, Omega=a.Omega)
+
+    N = int(a.tmax / a.h)
+    tE, YE = integrate(sho_rhs, euler_step, 0.0, [a.x0, a.v0], a.h, N, p)
+    tR, YR = integrate(sho_rhs, rk4_step,   0.0, [a.x0, a.v0], a.h, N, p)
+    EE = energy(YE[:,0], YE[:,1], p)
+    ER = energy(YR[:,0], YR[:,1], p)
+
+    print(f"h={a.h}, steps={N}  (forced c=F0=0: {a.force_validation})")
+    print(f"Euler: E in [{EE.min():.6f}, {EE.max():.6f}], drift ΔE={EE.max()-EE.min():.6e}")
+    print(f"RK4  : E in [{ER.min():.6f}, {ER.max():.6f}], drift ΔE={ER.max()-ER.min():.6e}")
+
+    if PLOT_OK:
+        plt.figure()
+        plt.plot(tE, EE, label="Euler")
+        plt.plot(tR, ER, label="RK4")
+        plt.xlabel("t")
+        plt.ylabel("Energy")
+        plt.title("Energy drift (free SHO if c=F0=0)")
+        plt.legend(); plt.grid(True); plt.tight_layout(); plt.show()
+
+
+def mode_convergence(a: argparse.Namespace) -> None:
+    """Global error vs step size h for the free SHO (c=F_{0}=0)."""
+    # Free oscillator: no damping/drive
+    p = SHOParams(m=a.m, c=0.0, k=a.k, F0=0.0)
+    errs_eu, errs_rk, hs = [], [], []
+
+    for h in a.h_list:
+        N = int(a.tmax / h)
+        tE, YE = integrate(sho_rhs, euler_step, 0.0, [a.x0, a.v0], h, N, p)
+        tR, YR = integrate(sho_rhs, rk4_step,   0.0, [a.x0, a.v0], h, N, p)
+
+        # exact free solution for comparison
+        x_exact_E = exact_free_solution(tE, a.x0, a.v0, p)
+        x_exact_R = exact_free_solution(tR, a.x0, a.v0, p)
+
+        errE = np.linalg.norm(YE[:,0] - x_exact_E, ord=np.inf)
+        errR = np.linalg.norm(YR[:,0] - x_exact_R, ord=np.inf)
+
+        hs.append(h); errs_eu.append(errE); errs_rk.append(errR)
+        print(f"h={h:<8g}  err_Euler={errE:.6e}  err_RK4={errR:.6e}")
+
+    if PLOT_OK:
+        import matplotlib.pyplot as plt
+        plt.figure()
+        plt.loglog(hs, errs_eu, "o-", label="Euler (O(h))")
+        plt.loglog(hs, errs_rk, "s-", label="RK4 (O(h^4))")
+        plt.gca().invert_xaxis()
+        plt.xlabel("step size h")
+        plt.ylabel("global max-norm error in x(t)")
+        plt.title("Global error vs step size (free SHO)")
+        plt.grid(True, which="both"); plt.legend(); plt.tight_layout(); plt.show()
+
+
+def mode_frequency_response(a: argparse.Namespace) -> None:
+    """Sweep Omega and measure steady-state amplitude & phase and compare to analytic."""
+    p_base = SHOParams(m=a.m, c=a.c, k=a.k, F0=a.F0, Omega=0.0)
+    stepper = pick_stepper(a.method)
+    Om_list = np.linspace(a.Omega_min, a.Omega_max, a.n_Omega)
+    amps_num, phases_num, amps_ana, phases_ana = [], [], [], []
+
+    # Choose a simulation length Decay time ~ m/c also needs multiple periods
+    gam = gamma(p_base)
+    for Om in Om_list:
+        p = SHOParams(m=p_base.m, c=p_base.c, k=p_base.k, F0=p_base.F0, Omega=Om)
+        Tdrive = 2*np.pi/Om
+        t_trans = max(10.0/gam if gam>0 else 0.0, 10*Tdrive)
+        t_meas  = max(5*Tdrive, 2.0/gam if gam>0 else 5*Tdrive)
+        h = a.h
+        N = int((t_trans + t_meas)/h)
+        t, Y = integrate(sho_rhs, stepper, 0.0, [a.x0, a.v0], h, N, p)
+
+        # Tail for measurement
+        mask = t >= (t[-1] - t_meas)
+        tt, xx = t[mask], Y[mask,0]
+        R, phi, _ = fit_amp_phase_cos_sin(tt, xx, Om)
+        amps_num.append(R); phases_num.append(phi)
+
+        X, ph = steady_state_amp_phase_analytic(p)
+        amps_ana.append(X); phases_ana.append(ph)
+
+    # Table around resonance
+    om_peak = resonance_peak_theory(p_base)
+    print(f"Theory resonance peak (underdamped): Omega_peak ≈ {om_peak:.6g} rad/s")
+    print(f"{'Ω':>8} {'Amp_num':>12} {'Amp_th':>12} {'RelErr':>10} {'phi_num(rad)':>14} {'phi_th(rad)':>12}")
+    for Om, An, Aa, phn, pha in zip(Om_list, amps_num, amps_ana, phases_num, phases_ana):
+        rel = abs(An - Aa) / max(1.0, abs(Aa))
+        print(f"{Om:>8.3f} {An:>12.6g} {Aa:>12.6g} {rel:>10.3e} {phn:>14.3f} {pha:>12.3f}")
+
+    if PLOT_OK:
+        fig, ax = plt.subplots(2, 1, figsize=(6, 7))
+        ax[0].plot(Om_list, amps_num, "o-", label=f"numeric ({a.method})")
+        ax[0].plot(Om_list, amps_ana, "--", label="analytic")
+        if not np.isnan(om_peak):
+            ax[0].axvline(om_peak, color="k", linestyle=":", label="Omega_peak theory")
+        ax[0].set_xlabel("Omega"); ax[0].set_ylabel("Amplitude")
+        ax[0].set_title("Frequency response — amplitude")
+        ax[0].grid(True); ax[0].legend()
+
+        ax[1].plot(Om_list, phases_num, "o-", label=f"numeric ({a.method})")
+        ax[1].plot(Om_list, phases_ana, "--", label="analytic")
+        if not np.isnan(om_peak):
+            ax[1].axvline(om_peak, color="k", linestyle=":", label="Omega_peak theory")
+        ax[1].set_xlabel("Omega"); ax[1].set_ylabel("Phase Phi (rad)")
+        ax[1].set_title("Frequency response — phase")
+        ax[1].grid(True); ax[1].legend()
+        plt.tight_layout(); plt.show()
+
+
+def mode_physical_checks(a: argparse.Namespace) -> None:
+    """
+    Compact PASS/FAIL summary of required physical properties:
+      - Energy conservation when c=F_{0}=0
+      - Resonance peak near sqrt(omega_{0}^2 - gamma^2/2)
+      - Phase approx 90 degree at resonance
+    """
+    # 1) Energy conservation
+    p_free = SHOParams(m=a.m, c=0.0, k=a.k, F0=0.0, Omega=a.Omega)
+    h, T = a.h, a.tmax
+    N = int(T/h)
+    tE, YE = integrate(sho_rhs, euler_step, 0.0, [a.x0, a.v0], h, N, p_free)
+    tR, YR = integrate(sho_rhs, rk4_step,   0.0, [a.x0, a.v0], h, N, p_free)
+    driftE = energy(YE[:,0], YE[:,1], p_free); driftR = energy(YR[:,0], YR[:,1], p_free)
+    dE = driftE.max() - driftE.min()
+    dR = driftR.max() - driftR.min()
+    print("Energy conservation (c=F_{0}=0):")
+    print(f"  Euler ΔE = {dE:.3e}  |  RK4 ΔE = {dR:.3e}  -> PASS if RK4 << Euler and both down as h down")
+
+    # 2) Resonance & phase at resonance
+    p_drive = SHOParams(m=a.m, c=a.c, k=a.k, F0=a.F0, Omega=0.0)
+    om_peak = resonance_peak_theory(p_drive)
+    if math.isnan(om_peak):
+        print("Resonance check: system not underdamped (gamma le sqrt(2) omega_{0}). Skipping.")
+        return
+
+    # Evaluate at a grid around the peak
+    Om_list = np.linspace(0.6*om_peak, 1.4*om_peak, 15)
+    stepper = rk4_step
+    gam = gamma(p_drive)
+    records = []
+    for Om in Om_list:
+        p = SHOParams(m=p_drive.m, c=p_drive.c, k=p_drive.k, F0=p_drive.F0, Omega=Om)
+        Tdrive = 2*np.pi/Om
+        t_trans = max(10.0/gam if gam>0 else 0.0, 10*Tdrive)
+        t_meas  = max(5*Tdrive, 2.0/gam if gam>0 else 5*Tdrive)
+        N = int((t_trans + t_meas)/h)
+        t, Y = integrate(sho_rhs, stepper, 0.0, [0.0, 0.0], h, N, p)
+        mask = t >= (t[-1] - t_meas)
+        R, phi, _ = fit_amp_phase_cos_sin(t[mask], Y[mask,0], Om)
+        records.append((Om, R, phi))
+    # Find numeric peak
+    Om_num, R_num, phi_num = max(records, key=lambda r: r[1])
+    print(f"Resonance peak:")
+    print(f"  theory Omega_peak ≈ {om_peak:.6f} | numeric Ω_peak ≈ {Om_num:.6f} (|Δ| = {abs(Om_num-om_peak):.3e})")
+    print(f"Phase near peak (should be ~ π/2):  phi_num = {phi_num:.3f} rad  ({np.degrees(phi_num):.1f}degree)")
+    print("  -> PASS if |Omega_num - Omega_theory| is small and Phi approx 1.57 rad (90 degree).")
+
+
+# -------------------------------------------------------------------------------------------------------------
+
+def build_parser() -> argparse.ArgumentParser:
+    p = argparse.ArgumentParser(
+        description="Driven–damped harmonic oscillator: Euler/RK4 with analytics & physical checks",
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+    )
+    sub = p.add_subparsers(dest="mode", required=True)
+
+    # Common defaults
+    def add_common(sp):
+        sp.add_argument("--m", type=float, default=1.0)
+        sp.add_argument("--k", type=float, default=1.0)
+        sp.add_argument("--c", type=float, default=0.0)
+        sp.add_argument("--F0", type=float, default=0.0)
+        sp.add_argument("--Omega", type=float, default=1.0)
+        sp.add_argument("--x0", type=float, default=1.0)
+        sp.add_argument("--v0", type=float, default=0.0)
+        sp.add_argument("--h",  type=float, default=0.02)
+        sp.add_argument("--tmax", type=float, default=40.0)
+
+    # phase_portrait
+    q = sub.add_parser("phase_portrait", help="Plot x–v phase portrait")
+    add_common(q)
+    q.add_argument("--method", choices=["euler","rk4"], default="rk4")
+    q.set_defaults(func=mode_phase_portrait)
+
+    # energy_drift
+    r = sub.add_parser("energy_drift", help="Energy drift (Euler vs RK4)")
+    add_common(r)
+    r.add_argument("--force_validation", action="store_true",
+                   help="Force c=0,F0=0 (free SHO) regardless of flags")
+    r.set_defaults(func=mode_energy_drift)
+
+    # convergence
+    s = sub.add_parser("convergence", help="Global error vs step size h (free SHO)")
+    s.add_argument("--m", type=float, default=1.0)
+    s.add_argument("--k", type=float, default=1.0)
+    s.add_argument("--x0", type=float, default=1.0)
+    s.add_argument("--v0", type=float, default=0.0)
+    s.add_argument("--tmax", type=float, default=20.0)
+    s.add_argument("--h_list", type=float, nargs="+", default=[0.4,0.2,0.1,0.05,0.025])
+    s.set_defaults(func=mode_convergence)
+
+    # frequency_response
+    t = sub.add_parser("frequency_response", help="Sweep Omega and amplitude/phase vs Omega with analytic overlay")
+    add_common(t)
+    t.add_argument("--Omega_min", type=float, default=0.2)
+    t.add_argument("--Omega_max", type=float, default=2.0)
+    t.add_argument("--n_Omega",   type=int,   default=50)
+    t.add_argument("--method", choices=["euler","rk4"], default="rk4")
+    t.set_defaults(func=mode_frequency_response)
+
+    # physical_checks
+    u = sub.add_parser("physical_checks", help="PASS/FAIL checks for project rubric")
+    add_common(u)
+    u.set_defaults(func=mode_physical_checks)
+
+    return p
+
+
+def main(argv: List[str] | None = None) -> int:
+    parser = build_parser()
+    args = parser.parse_args(argv)
+    args.func(args)
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
 
 
 
