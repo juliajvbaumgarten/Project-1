@@ -27,6 +27,7 @@ Usage (short version):
   5) error_vs_N     -> loglog error study vs N for each rule
      field_profile  -> E_{y} vs a curve, numeric vs analytic
      compare_scipy  -> numeric value vs SciPy quad/trapezoid/simpson
+     (Command Line Modes)
 
 Usage examples:
   python main_integral.py error_vs_N --L 1.0 --a 0.5 --N_list 20 40 80 160 --rules riemann trapezoid simpson --plot
@@ -43,7 +44,28 @@ from typing import Callable, Iterable, List, Tuple
 import numpy as np
 
 # ----------------------------- Physics model ----------------------------- #
+@dataclass
+class CoulombLineParams:
+    L: float  # half-length of the charged segment
+    a: float  # distance from the line along the perpendicular bisector
+    K: float = 1.0  # constant λ/(4π ε0). We keep as 1 by default to focus on numerics
 
+
+def ey_kernel(x: np.ndarray | float, a: float) -> np.ndarray | float:
+    """
+    Kernel for the y-component of E on the perp. bisector:
+      f(x; a) = a / (x^2 + a^2)^(3/2)
+    This is smooth on [-L, L] for a > 0
+    """
+    return a / np.power(x * x + a * a, 1.5)
+
+
+def ey_analytic(p: CoulombLineParams) -> float:
+    """
+    Closed-form result:
+      Ey(a, L) = K * 2L / (a * sqrt(a^2 + L^2))
+    """
+    return p.K * (2.0 * p.L) / (p.a * math.sqrt(p.a * p.a + p.L * p.L))
 
 
 
