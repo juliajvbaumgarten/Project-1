@@ -34,4 +34,29 @@ Usage examples:
   python main_integral.py compare_scipy --L 1.0 --a 0.5 --rule simpson --N 400
 """
 
+# ----------------------------- Import ----------------------------- #
+import argparse
+import math
+import sys
+from dataclasses import dataclass
+from typing import Callable, Iterable, List, Tuple
+import numpy as np
+
+# ----------------------------- Physics model ----------------------------- #
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
