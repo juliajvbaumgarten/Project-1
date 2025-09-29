@@ -91,14 +91,67 @@ This specific command runs the integral.py file using "field profile" mode, whic
 "--L 1.0" sets the half length of the charged line so it goes from -1.0 to +1.0  
 "--a_min 0.1 --a_max 4.0" sets the range of perpendicular distances from the line where the field is evaluated. It starts at $a = 0.1$ and ends at $a = 4.0$  
 "--n_a 50" sets the number of points being swept, so this computes 50 evenly spaced values between a_min and a_max  
-"--rule simpson" use of Simpson's rule for integration
-"--N 400" is the number of integration subintervals
-"--plot" generates the figure
+"--rule simpson" use of Simpson's rule for integration  
+"--N 400" is the number of integration subintervals  
+"--plot" generates the figure  
 
 ***compare_scipy***
 ```bash
 python integral.py compare_scipy --L 1.0 --a 0.5 --rule trapezoid --N 200
 ```
+This specific command runs the integral.py file using "compare scipy" mode, which compares the coded integration routines against the integrated SciPy option.  
+"--L 1.0" sets the half length of the charged line so it goes from -1.0 to +1.0  
+"--a 0.5" sets the perpendicular distance from the line to the point from which we observe. This is $E_y$ at point $\(0, 0.5)\$  
+"--rule trapezoid" use of trapezoid rule for integration  
+"--N 200" is the number of integration subintervals  
+
+
+## ODE Problem: Driven–damped harmonic oscillator
+
+### Physics Setup
+
+We consider the equation:
+
+$$
+m \ddot{x} + c \dot{x} + k x = F_0 \cos(\Omega t),
+$$
+
+where  
+$\(m\)$ : mass  
+$\(k\)$ : spring constant (\(\omega_0 = \sqrt{k/m}\))  
+$\(c\)$ : damping coefficient (\(\gamma = c/m\))  
+$\(F_0\)$ : drive amplitude  
+$\(\Omega\)$ : drive frequency  
+
+Special cases:  
+1. Free oscillator $\(c=F_0=0\)$: exact solution exists, energy is conserved.  
+2. Driven damped oscillator: steady-state amplitude and phase given by analytic formulae.
+
+---
+
+## Features
+
+1. Euler and RK4 fixed-step integrators
+2. Phase portraits (x vs v)
+3. Energy drift comparison: Euler vs RK4
+4. Global error vs step size $\(h\)$ (log–log)
+5. Frequency response (amplitude & phase vs $\(\Omega\)$
+6. Physical checks summary:
+  - Energy conservation in free SHO  
+  - Resonance peak near $\(\Omega \approx \sqrt{\omega_0^2 - \gamma^2/2}\)$    
+  - Phase $\(\approx 90^\circ\)$ at resonance
+
+---
+
+### CLI Modes
+
+The script is run via:
+
+```bash
+python ODE.py <mode> [options]
+```
+
+### Usage
 
 
 
