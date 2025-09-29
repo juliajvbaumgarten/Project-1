@@ -68,21 +68,28 @@ python main_integral.py <mode> [options]
 2. "field_profile" gives the y component of the electric field as a function of a vs the distance a.
 3. "compare_scipy" compares to SciPy implementations.
 
-***Error_vs_N***
+***error_vs_N***
 ```bash
-python main_integral.py error_vs_N --L 1.0 --a 0.5 \
+python integral.py error_vs_N --L 1.0 --a 0.5 \
   --N_list 20 40 80 160 --rules riemann trapezoid simpson --plot
 ```
 
+This specific command runs the integral.py file using "error vs. N" mode, which checks how the numerical error decreases with N.
+"--L 1.0" sets the half length of the charged line so it goes from -1.0 to +1.0
+"--a 0.5" sets the perpendicular distance from the line to the point from which we observe. This is E_y at point (0, 0.5)
+"--N_list 20 40 80 160" runs the integration with N = 20, 40, 80, 160. Each N is step size h = (2L)/N
+"--rules riemann trapezoid simpson" makes use of all three integration rules to run
+"--plot" generates the figure
+
 ***field_profile***
 ```bash
-python main_integral.py field_profile --L 1.0 --a_min 0.1 --a_max 4.0 \
+python integral.py field_profile --L 1.0 --a_min 0.1 --a_max 4.0 \
   --n_a 50 --rule simpson --N 400 --plot
 ```
 
 ***compare_scipy***
 ```bash
-python main_integral.py compare_scipy --L 1.0 --a 0.5 --rule trapezoid --N 200
+python integral.py compare_scipy --L 1.0 --a 0.5 --rule trapezoid --N 200
 ```
 
 
