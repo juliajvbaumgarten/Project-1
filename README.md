@@ -174,14 +174,24 @@ This specific command runs the ODE.py file using "phase portrait" mode, which pl
 ```bash
 python ODE.py energy_drift --m 1 --k 1 --force_validation --h 0.05 --tmax 200
 ```
-
+This specific command runs the ODE.py file using "energy drift" mode, which checks how the total energy of the oscillator changes over long integration periods. It can help verify energy conservation.  
+"--m 1" sets the mass to 1  
+"--k 1" sets the spring constant to 1  
+"--force_validation" adds validation layer  
+"--h 0.05" sets the time step at 0.05  
+"--tmax 200" simulates until $t = 200$. We note $\frac{200}{2\pi}$ is about 32 oscillations.  
 
 
 ***convergence***
 ```bash
 python ODE.py convergence --m 1 --k 1 --x0 1 --v0 0 --tmax 10 --h_list 0.4 0.2 0.1 0.05 0.025
 ```
-
+This specific command runs the ODE.py file using "convergence" mode, which plots error vs time step to analyse global error behavior.  
+"--m 1" sets the mass to 1  
+"--k 1" sets the spring constant to 1  
+"--x0 1 --v0 0" sets the initial conditions to $x(0) = 1$ and $v(0) = 0$   
+"--tmax 10" simulates until $t = 10$.  
+"--h_list 0.4 0.2 0.1 0.05 0.025" runs the simulation with step sizes 0.4 0.2 0.1 0.05 0.025     
 
 
 ***frequency_response***
@@ -190,6 +200,14 @@ python ODE.py frequency_response --m 1 --k 1 --c 0.1 --F0 1 --h 0.01 \
   --Omega_min 0.2 --Omega_max 2.0 --n_Omega 60 --method rk4
 ```
 
+This specific command runs the ODE.py file using "frequency response" mode, which sweeps the drive frequency and measures the steady state amplitude and phase of the oscillator.  
+"--m 1" sets the mass to 1  
+"--k 1" sets the spring constant to 1  
+"--c 0.1" sets the damping coefficient to 0.1  
+"--F0 1" sets the driving force amplitude to 1  
+"--h 0.01" sets the time step at 0.01  
+"--Omega_min 0.2 --Omega_max 2.0 --n_Omega 60" sweeps the drive frequency from $0.2$ to $2.0$ using 60 evenly spaced points  
+"--method rk4" runs Runge-Kutta 4th order method to solve the ODE  
 
 
 ***physical_checks***
@@ -197,10 +215,13 @@ python ODE.py frequency_response --m 1 --k 1 --c 0.1 --F0 1 --h 0.01 \
 python ODE.py physical_checks --m 1 --k 1 --c 0.1 --F0 1 --h 0.01 --tmax 60
 ```
 
-
-
-
-
+This specific command runs the ODE.py file using "physical checks" mode, which checks if this oscillator obeys physical properties like energy conservation, resonance, and phase. This returns a Pass or Fail summary of the results.   
+"--m 1" sets the mass to 1  
+"--k 1" sets the spring constant to 1  
+"--c 0.1" sets the damping coefficient to 0.1  
+"--F0 1" sets the driving force amplitude to 1  
+"--h 0.01" sets the time step at 0.01  
+"--tmax 60" simulates until $t = 60$. We note $\frac{60}{2\pi}$ is about 10 oscillations.  
 
 
 
