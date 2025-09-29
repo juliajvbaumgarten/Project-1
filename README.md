@@ -58,5 +58,36 @@ E_y(a, L) = \frac{\lambda}{4 \pi \varepsilon_0} \cdot
 ### CLI Modes
 
 ```bash
-python main_integral.py <mode> [options] ```
+python main_integral.py <mode> [options]
+```
+
+
+### Usage 
+
+1. "error_vs_N" is an error vs N convergence analysis tool.
+2. "field_profile" gives the y component of the electric field as a function of a vs the distance a.
+3. "compare_scipy" compares to SciPy implementations.
+
+***Error_vs_N***
+```bash
+python main_integral.py error_vs_N --L 1.0 --a 0.5 \
+  --N_list 20 40 80 160 --rules riemann trapezoid simpson --plot
+```
+
+***field_profile***
+```bash
+python main_integral.py field_profile --L 1.0 --a_min 0.1 --a_max 4.0 \
+  --n_a 50 --rule simpson --N 400 --plot
+```
+
+***compare_scipy***
+```bash
+python main_integral.py compare_scipy --L 1.0 --a 0.5 --rule trapezoid --N 200
+```
+
+
+
+
+
+
 
