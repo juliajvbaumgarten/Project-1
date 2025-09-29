@@ -74,11 +74,11 @@ python integral.py error_vs_N --L 1.0 --a 0.5 \
   --N_list 20 40 80 160 --rules riemann trapezoid simpson --plot
 ```
 
-This specific command runs the integral.py file using "error vs. N" mode, which checks how the numerical error decreases with N.
-"--L 1.0" sets the half length of the charged line so it goes from -1.0 to +1.0
-"--a 0.5" sets the perpendicular distance from the line to the point from which we observe. This is E_y at point (0, 0.5)
-"--N_list 20 40 80 160" runs the integration with N = 20, 40, 80, 160. Each N is step size h = (2L)/N
-"--rules riemann trapezoid simpson" makes use of all three integration rules to run
+This specific command runs the integral.py file using "error vs. N" mode, which checks how the numerical error decreases with N.  
+"--L 1.0" sets the half length of the charged line so it goes from -1.0 to +1.0  
+"--a 0.5" sets the perpendicular distance from the line to the point from which we observe. This is E_y at point (0, 0.5)  
+"--N_list 20 40 80 160" runs the integration with N = 20, 40, 80, 160. Each N is step size h = (2L)/N  
+"--rules riemann trapezoid simpson" makes use of all three integration rules to run  
 "--plot" generates the figure
 
 ***field_profile***
