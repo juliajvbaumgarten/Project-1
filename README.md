@@ -57,6 +57,7 @@ $$
 
 ### CLI Modes
 
+The script is run via:  
 ```bash
 python main_integral.py <mode> [options]
 ```
@@ -152,6 +153,47 @@ python ODE.py <mode> [options]
 ```
 
 ### Usage
+
+***phase_portrait***
+```bash
+python ODE.py phase_portrait --m 1 --k 1 --c 0 --F0 0 --x0 1 --v0 0 --h 0.02 --tmax 20 --method rk4
+```
+
+This specific command runs the integral.py file using "error vs. N" mode, which checks how the numerical error decreases with N.  
+"--L 1.0" sets the half length of the charged line so it goes from -1.0 to +1.0  
+"--a 0.5" sets the perpendicular distance from the line to the point from which we observe. This is $E_y$ at point $\(0, 0.5)\$  
+"--N_list 20 40 80 160" runs the integration with N = 20, 40, 80, 160. Each N is step size h = (2L)/N  
+"--rules riemann trapezoid simpson" makes use of all three integration rules to run  
+"--plot" generates the figure
+
+
+***energy_drift***
+```bash
+python ODE.py energy_drift --m 1 --k 1 --force_validation --h 0.05 --tmax 200
+```
+
+
+
+***convergence***
+```bash
+python ODE.py convergence --m 1 --k 1 --x0 1 --v0 0 --tmax 10 --h_list 0.4 0.2 0.1 0.05 0.025
+```
+
+
+
+***frequency_response***
+```bash
+python ODE.py frequency_response --m 1 --k 1 --c 0.1 --F0 1 --h 0.01 \
+  --Omega_min 0.2 --Omega_max 2.0 --n_Omega 60 --method rk4
+```
+
+
+
+***physical_checks***
+```bash
+python ODE.py physical_checks --m 1 --k 1 --c 0.1 --F0 1 --h 0.01 --tmax 60
+```
+
 
 
 
