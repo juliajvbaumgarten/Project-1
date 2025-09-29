@@ -8,7 +8,7 @@ This project implements Python modules to solve two different types of physics p
    Electric field on the perpendicular bisector of a finite uniformly charged line.
 
  **ODE problem**  
-   Driven–damped harmonic oscillator:
+   Driven–damped harmonic oscillator:  
    $\(m x'' + c x' + k x = F_0 \cos(\Omega t)\)$
 
 Both problems are solved using different numerical integration methods:
@@ -76,7 +76,7 @@ python integral.py error_vs_N --L 1.0 --a 0.5 \
 
 This specific command runs the integral.py file using "error vs. N" mode, which checks how the numerical error decreases with N.  
 "--L 1.0" sets the half length of the charged line so it goes from -1.0 to +1.0  
-"--a 0.5" sets the perpendicular distance from the line to the point from which we observe. This is E_y at point (0, 0.5)  
+"--a 0.5" sets the perpendicular distance from the line to the point from which we observe. This is $E_y$ at point $\(0, 0.5)\$  
 "--N_list 20 40 80 160" runs the integration with N = 20, 40, 80, 160. Each N is step size h = (2L)/N  
 "--rules riemann trapezoid simpson" makes use of all three integration rules to run  
 "--plot" generates the figure
@@ -86,6 +86,14 @@ This specific command runs the integral.py file using "error vs. N" mode, which 
 python integral.py field_profile --L 1.0 --a_min 0.1 --a_max 4.0 \
   --n_a 50 --rule simpson --N 400 --plot
 ```
+
+This specific command runs the integral.py file using "field profile" mode, which sweeps over distances a to build a profile of the electric field $E_y(a)$.  
+"--L 1.0" sets the half length of the charged line so it goes from -1.0 to +1.0  
+"--a_min 0.1 --a_max 4.0" sets the range of perpendicular distances from the line where the field is evaluated. It starts at $a = 0.1$ and ends at $a = 4.0$  
+"--n_a 50" sets the number of points being swept, so this computes 50 evenly spaced values between a_min and a_max  
+"--rule simpson" use of Simpson's rule for integration
+"--N 400" is the number of integration subintervals
+"--plot" generates the figure
 
 ***compare_scipy***
 ```bash
