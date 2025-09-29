@@ -3,13 +3,13 @@ Author: Julia Baumgarten
 
 This project implements Python modules to solve two different types of physics problems using numerical integration:
 
- # Definite integral problem  
+ **Definite integral problem**  
    Coulomb’s law in 1D geometry
    Electric field on the perpendicular bisector of a finite uniformly charged line.
 
- # ODE problem  
+ **ODE problem**  
    Driven–damped harmonic oscillator:
-   (m x'' + c x' + k x = F_{0} cos(Omega t)).
+   \(m x'' + c x' + k x = F_0 \cos(\Omega t)\)
 
 Both problems are solved using different numerical integration methods:
 1. Euler and RK4
@@ -20,6 +20,6 @@ Furthermore, physical validation checks are included.
 
 
   # Content
-1. "integral.py" is the CLI for the Coulomb line integral problem  
+1. 'integral.py' is the CLI for the Coulomb line integral problem  
 2. "ODE.py" is the CLI for the driven–damped oscillator problem  
 3. "README.md" gives usage instructions and an overview
