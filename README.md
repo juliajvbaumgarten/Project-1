@@ -159,12 +159,15 @@ python ODE.py <mode> [options]
 python ODE.py phase_portrait --m 1 --k 1 --c 0 --F0 0 --x0 1 --v0 0 --h 0.02 --tmax 20 --method rk4
 ```
 
-This specific command runs the integral.py file using "error vs. N" mode, which checks how the numerical error decreases with N.  
-"--L 1.0" sets the half length of the charged line so it goes from -1.0 to +1.0  
-"--a 0.5" sets the perpendicular distance from the line to the point from which we observe. This is $E_y$ at point $\(0, 0.5)\$  
-"--N_list 20 40 80 160" runs the integration with N = 20, 40, 80, 160. Each N is step size h = (2L)/N  
-"--rules riemann trapezoid simpson" makes use of all three integration rules to run  
-"--plot" generates the figure
+This specific command runs the ODE.py file using "phase portrait" mode, which plots the phase trajectory $v(t)$ vs $x(t)$ to visualize the oscillator's dynamics.  
+"--m 1" sets the mass to 1  
+"--k 1" sets the spring constant to 1  
+"--c 0" sets the damping coefficient to 0  
+"--F0 0" sets the driving force amplitude to 0  
+"--x0 1 --v0 0" sets the initial conditions to $x(0) = 1$ and $v(0) = 0$   
+"--h 0.02" sets the time step at 0.02  
+"--tmax 20" simulates until $t = 20$. We note $\frac{20}{2\pi}$ is about 3 oscillations.  
+"--method rk4" runs Runge-Kutta 4th order method to solve the ODE  
 
 
 ***energy_drift***
