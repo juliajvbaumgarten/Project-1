@@ -29,20 +29,20 @@ Furthermore, physical validation checks are included.
 
 ### Physics Setup
 
-Line of half-length \(L\) on the x-axis, uniform charge density \(\lambda\).  
-We evaluate the electric field at point \((0,a)\). By symmetry, only the y-component survives:
+Line of half-length $\(L\)$ on the x-axis, uniform charge density \(\lambda\).  
+We evaluate the electric field at point $\((0,a)\)$. By symmetry, only the y-component survives:
 
-\[
+$$
 E_y(a) = \frac{1}{4 \pi \varepsilon_0} \int_{-L}^{L} 
          \frac{\lambda a}{(x^2 + a^2)^{3/2}} \, dx
-\]
+$$
 
 Analytic result:
 
-\[
+$$
 E_y(a, L) = \frac{\lambda}{4 \pi \varepsilon_0} \cdot 
             \frac{2L}{a \sqrt{a^2 + L^2}}.
-\]
+$$
 
 ---
 
