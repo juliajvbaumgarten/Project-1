@@ -9,7 +9,7 @@ This project implements Python modules to solve two different types of physics p
 
  **ODE problem**  
    Driven–damped harmonic oscillator:
-   \(m x'' + c x' + k x = F_0 \cos(\Omega t)\)
+   $\(m x'' + c x' + k x = F_0 \cos(\Omega t)\)$
 
 Both problems are solved using different numerical integration methods:
 1. Euler and RK4
@@ -29,8 +29,8 @@ Furthermore, physical validation checks are included.
 
 ### Physics Setup
 
-Line of half-length $\(L\)$ on the x-axis, uniform charge density \(\lambda\).  
-We evaluate the electric field at point $\((0,a)\)$. By symmetry, only the y-component survives:
+Line of half-length $\(L\)$ on the x-axis, uniform charge density $\(\lambda\)$.  
+We evaluate the electric field at point $\(0,a)\$. By symmetry, only the y-component survives:
 
 $$
 E_y(a) = \frac{1}{4 \pi \varepsilon_0} \int_{-L}^{L} 
