@@ -20,6 +20,43 @@ Furthermore, physical validation checks are included.
 
 
   # Content
-1. 'integral.py' is the CLI for the Coulomb line integral problem  
+1. "integral.py" is the CLI for the Coulomb line integral problem  
 2. "ODE.py" is the CLI for the driven–damped oscillator problem  
 3. "README.md" gives usage instructions and an overview
+
+
+## Definite Integral Problem: Coulomb’s Law in 1D
+
+### Physics Setup
+
+Line of half-length \(L\) on the x-axis, uniform charge density \(\lambda\).  
+We evaluate the electric field at point \((0,a)\). By symmetry, only the y-component survives:
+
+\[
+E_y(a) = \frac{1}{4 \pi \varepsilon_0} \int_{-L}^{L} 
+         \frac{\lambda a}{(x^2 + a^2)^{3/2}} \, dx
+\]
+
+Analytic result:
+
+\[
+E_y(a, L) = \frac{\lambda}{4 \pi \varepsilon_0} \cdot 
+            \frac{2L}{a \sqrt{a^2 + L^2}}.
+\]
+
+---
+
+### Features
+
+1. Riemann midpoint, Trapezoid, Simpson rules
+2. Numeric vs analytic field comparison
+3. Error scaling with number of intervals \(N\)
+4. Comparison against SciPy’s quad, trapezoid, simpson
+
+---
+
+### CLI Modes
+
+```bash
+python main_integral.py <mode> [options] ```
+
