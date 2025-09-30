@@ -42,6 +42,7 @@ import sys
 from dataclasses import dataclass
 from typing import Callable, Iterable, List, Tuple
 import numpy as np
+from helper import *
 
 try:
     import scipy.integrate as spint  # quad, simpson, trapezoid
