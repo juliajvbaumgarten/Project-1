@@ -72,49 +72,6 @@ def ey_analytic(p: CoulombLineParams) -> float:
     """
     return p.K * (2.0 * p.L) / (p.a * math.sqrt(p.a * p.a + p.L * p.L))
 
-# ----------------------------- Quadrature rules ----------------------------- #
-
-def riemann_midpoint(f: Callable[[np.ndarray], np.ndarray], a: float, b: float, N: int) -> float:
-    """
-    Midpoint Riemann sum on [a, b] with N uniform subintervals.
-    Order O(h^2) for smooth f, where h = (b - a) / N
-    """
-    if N <= 0:
-        raise ValueError("N must be positive.")
-    h = (b - a) / N
-    # midpoints of each subinterval
-    m = (np.arange(N, dtype=float) + 0.5) * h + a
-    return float(h * np.sum(f(m)))
-
-
-def trapezoid(f: Callable[[np.ndarray], np.ndarray], a: float, b: float, N: int) -> float:
-    """
-    Composite trapezoidal rule on [a, b] with N panels (N+1 nodes).
-    Global error O(h^2) for smooth f.
-    """
-    if N <= 0:
-        raise ValueError("N must be positive.")
-    h = (b - a) / N
-    x = np.linspace(a, b, N + 1)
-    y = f(x)
-    return float(h * (0.5 * y[0] + np.sum(y[1:-1]) + 0.5 * y[-1]))
-
-
-def simpson(f: Callable[[np.ndarray], np.ndarray], a: float, b: float, N: int) -> float:
-    """
-    Composite Simpson's rule on [a, b] with N panels (requires N even).
-    Global error O(h^4) for smooth f.
-    """
-    if N <= 0:
-        raise ValueError("N must be positive.")
-    if N % 2 != 0:
-        raise ValueError("Simpson's rule requires N to be even.")
-    h = (b - a) / N
-    x = np.linspace(a, b, N + 1)
-    y = f(x)
-    # weights: 1, 4, 2, 4, ..., 2, 4, 1
-    S = y[0] + y[-1] + 4.0 * np.sum(y[1:-1:2]) + 2.0 * np.sum(y[2:-2:2])
-    return float(h * S / 3.0)
 
 # ----------------------------- Problem ---------------------------------- #
 
