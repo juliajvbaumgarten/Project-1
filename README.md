@@ -9,7 +9,7 @@ This project implements Python modules to solve two different types of physics p
 
  **ODE problem**  
    Driven–damped harmonic oscillator:  
-   $\(m x'' + c x' + k x = F_0 \cos(\Omega t)\)$
+   $m x'' + c x' + k x = F_0 \cos(\Omega t)$
 
 Both problems are solved using different numerical integration methods:
 1. Euler and RK4
