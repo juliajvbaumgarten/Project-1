@@ -13,7 +13,7 @@ This project implements Python modules to solve two different types of physics p
 
 Both problems are solved using different numerical integration methods:
 1. Euler and RK4
-2. Riemann sum, Trapezoid, Simpson
+2. Riemann sum, Trapezoid, Simpson  
 These are compared to analytic results and to SciPy implementations.
 
 Furthermore, physical validation checks are included.
