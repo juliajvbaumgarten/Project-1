@@ -30,9 +30,9 @@ Features (short version):
      (Command Line Modes)
 
 Usage examples:
-  python main_integral.py error_vs_N --L 1.0 --a 0.5 --N_list 20 40 80 160 --rules riemann trapezoid simpson --plot
-  python main_integral.py field_profile --L 1.0 --a_min 0.1 --a_max 4.0 --n_a 50 --rule simpson --N 400 --plot
-  python main_integral.py compare_scipy --L 1.0 --a 0.5 --rule simpson --N 400
+  python integral.py error_vs_N --L 1.0 --a 0.5 --N_list 20 40 80 160 --rules riemann trapezoid simpson --plot
+  python integral.py field_profile --L 1.0 --a_min 0.1 --a_max 4.0 --n_a 50 --rule simpson --N 400 --plot
+  python integral.py compare_scipy --L 1.0 --a 0.5 --rule simpson --N 400
 """
 from __future__ import annotations
 # ----------------------------- Import ----------------------------- #
