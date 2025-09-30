@@ -14,8 +14,8 @@ This project implements Python modules to solve two different types of physics p
 Both problems are solved using different numerical integration methods:
 1. Euler and RK4
 2. Riemann sum, Trapezoid, Simpson  
-These are compared to analytic results and to SciPy implementations.
 
+These are compared to analytic results and to SciPy implementations.
 Furthermore, physical validation checks are included.
 
 
@@ -23,6 +23,7 @@ Furthermore, physical validation checks are included.
 1. "integral.py" is the CLI for the Coulomb line integral problem  
 2. "ODE.py" is the CLI for the driven–damped oscillator problem  
 3. "README.md" gives usage instructions and an overview
+4. "Baumgarten Project 01 Report.pdf" is the complimentary report
 
 
 ## Definite Integral Problem: Coulomb’s Law in 1D
